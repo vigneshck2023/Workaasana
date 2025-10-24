@@ -20,8 +20,14 @@ const teamSchema = new mongoose.Schema({
 // Project Schema
 const projectSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  description: String
+  description: String,
+  status: {
+    type: String,
+    enum: ["Completed", "In Progress"],
+    default: "In Progress"
+  }
 }, { timestamps: true });
+
 
 // User Schema
 const userSchema = new mongoose.Schema({
