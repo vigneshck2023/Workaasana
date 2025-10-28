@@ -14,8 +14,14 @@ const taskSchema = new mongoose.Schema({
 // Team Schema
 const teamSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
+  members: [
+    {
+      name: { type: String, required: true }
+    }
+  ],
   description: String
 });
+
 
 // Project Schema
 const projectSchema = new mongoose.Schema({
