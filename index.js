@@ -15,16 +15,6 @@ app.get("/", (req,res) => {
     res.send("Server is Running");
 })
 
-// Create a new Team
-app.post('/teams', async (req, res) => {
-  try {
-    const team = new Team(req.body);
-    const savedTeam = await team.save();
-    res.status(201).json(savedTeam);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
 
 // Create a new Task
 app.post('/tasks', async (req, res) => {
