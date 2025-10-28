@@ -84,6 +84,20 @@ app.get('/teams', async (req, res) => {
   }
 });
 
+app.post("/teams/:id/members", async (req, res) => {
+  try {
+    const { name } = req.body;
+    const team = await Team.findById(req.params.id);
+    if (!team) return res.status(404).json({ error: "Team not found" });
+
+    team.members.push({ name });
+    await team.save();
+    res.json(team);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 //------------------- Project -----------------------
 // Create Project
 app.post('/projects', async (req, res) => {
