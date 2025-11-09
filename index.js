@@ -1,23 +1,30 @@
+// Import required modules
 const express = require("express");
-const app = express();
 const cors = require("cors");
+require("dotenv").config();
 
+// Initialize Express app
+const app = express();
+
+// Middleware
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
-const {initializeDatabase} = require("./db/db.connect");
+// Import and initialize MongoDB connection
+const { initializeDatabase } = require("./db/db.connect");
 
-initializeDatabase();
+// Import models
+const { Task, Team, Project, User, Tag } = require("./models/project.model");
 
-const {Task, Team, Project, User, Tag} = require("./models/project.model");
+// ----------------- BASIC ROUTE -----------------
+app.get("/", (req, res) => {
+  res.send("✅ Server is Running");
+});
 
-app.get("/", (req,res) => {
-    res.send("Server is Running");
-})
-
+// ----------------- TASK ROUTES -----------------
 
 // Create a new Task
-app.post('/tasks', async (req, res) => {
+app.post("/tasks", async (req, res) => {
   try {
     const task = new Task(req.body);
     const savedTask = await task.save();
@@ -27,21 +34,21 @@ app.post('/tasks', async (req, res) => {
   }
 });
 
-// Get all Tasks (with populated references)
-app.get('/tasks', async (req, res) => {
+// Get all Tasks (populate references)
+app.get("/tasks", async (req, res) => {
   try {
     const tasks = await Task.find()
-      .populate('project')
-      .populate('team')
-      .populate('owners');
+      .populate("project")
+      .populate("team")
+      .populate("owners");
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Update Task
-app.put('/tasks/:id', async (req, res) => {
+// Update Task by ID
+app.put("/tasks/:id", async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedTask);
@@ -50,21 +57,20 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
-
-// Delete Task
-app.delete('/tasks/:id', async (req, res) => {
+// Delete Task by ID
+app.delete("/tasks/:id", async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Task deleted' });
+    res.json({ message: "Task deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-//------------- Teams -------------------
+// ----------------- TEAM ROUTES -----------------
 
 // Create Team
-app.post('/teams', async (req, res) => {
+app.post("/teams", async (req, res) => {
   try {
     const team = new Team(req.body);
     const savedTeam = await team.save();
@@ -75,7 +81,7 @@ app.post('/teams', async (req, res) => {
 });
 
 // Get All Teams
-app.get('/teams', async (req, res) => {
+app.get("/teams", async (req, res) => {
   try {
     const teams = await Team.find();
     res.json(teams);
@@ -84,6 +90,7 @@ app.get('/teams', async (req, res) => {
   }
 });
 
+// Add Member to Team
 app.post("/teams/:id/members", async (req, res) => {
   try {
     const { name } = req.body;
@@ -98,9 +105,10 @@ app.post("/teams/:id/members", async (req, res) => {
   }
 });
 
-//------------------- Project -----------------------
+// ----------------- PROJECT ROUTES -----------------
+
 // Create Project
-app.post('/projects', async (req, res) => {
+app.post("/projects", async (req, res) => {
   try {
     const project = new Project(req.body);
     const savedProject = await project.save();
@@ -111,7 +119,7 @@ app.post('/projects', async (req, res) => {
 });
 
 // Get All Projects
-app.get('/projects', async (req, res) => {
+app.get("/projects", async (req, res) => {
   try {
     const projects = await Project.find();
     res.json(projects);
@@ -123,7 +131,7 @@ app.get('/projects', async (req, res) => {
 // ----------------- USER ROUTES -----------------
 
 // Create User
-app.post('/users', async (req, res) => {
+app.post("/users", async (req, res) => {
   try {
     const user = new User(req.body);
     const savedUser = await user.save();
@@ -134,7 +142,7 @@ app.post('/users', async (req, res) => {
 });
 
 // Get All Users
-app.get('/users', async (req, res) => {
+app.get("/users", async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -143,8 +151,16 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// ----------------- Start Server -----------------
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ----------------- START SERVER -----------------
 
+// Start server only after DB connection succeeds
+const startServer = async () => {
+  await initializeDatabase(); // Wait until MongoDB connects
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+};
+
+startServer();
+
+// Export app (for testing or deployment)
 module.exports = app;
