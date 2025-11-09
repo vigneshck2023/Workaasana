@@ -8,7 +8,7 @@ const taskSchema = new mongoose.Schema({
   owners: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
   tags: [String],
   timeToComplete: { type: Number, required: true },
-  status: { type: String, enum: ['To Do', 'In Progress', 'Completed', 'Blocked'], default: 'To Do' },
+  status: { type: String, enum: ['In Progress', 'Completed'], default: 'In Progress' },
 }, { timestamps: true });
 
 // team schema
