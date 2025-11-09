@@ -18,7 +18,7 @@ const { Task, Team, Project, User, Tag } = require("./models/project.model");
 
 // ----------------- BASIC ROUTE -----------------
 app.get("/", (req, res) => {
-  res.send("✅ Server is Running");
+  res.send("Server is Running");
 });
 
 // ----------------- TASK ROUTES -----------------
