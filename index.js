@@ -128,6 +128,45 @@ app.get("/projects", async (req, res) => {
   }
 });
 
+// Update Project
+app.put("/projects/:id", async (req, res) => {
+  try {
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updatedProject);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete Project
+app.delete("/projects/:id", async (req, res) => {
+  try {
+    await Project.findByIdAndDelete(req.params.id);
+    res.json({ message: "Project deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update Project Status by ID
+app.patch("/projects/:id", async (req, res) => {
+  try {
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true }
+    );
+    res.json(updatedProject);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+
 // ----------------- USER ROUTES -----------------
 
 // Create User
